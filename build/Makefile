@@ -10,10 +10,11 @@ ARGS = \"$$\@\"
 	@$(SC) -cp $(SRC) -d $(SRC) $(SRC)/*.scala
 
 default: .scala.class
-	 @echo DIR=$$\(dirname \"\$${BASH_SOURCE[0]}\"\) > $(TARGETA)
+	 @echo \#!/bin/bash > $(TARGETA)
+	 @echo DIR=$$\(dirname \"\$${BASH_SOURCE[0]}\"\) >> $(TARGETA)
 	 @echo $(S) -cp \$$DIR/$(SRC) $(TARGETA) $(ARGS) >> $(TARGETA)
-
-	 @echo DIR=$$\(dirname \"\$${BASH_SOURCE[0]}\"\) > $(TARGETB)
+	 @echo \#!/bin/bash > $(TARGETB)
+	 @echo DIR=$$\(dirname \"\$${BASH_SOURCE[0]}\"\) >> $(TARGETB)
 	 @echo $(S) -cp \$$DIR/$(SRC) $(TARGETB) $(ARGS) >> $(TARGETB)
 	 @chmod +x $(TARGETA)
 	 @chmod +x $(TARGETB)
