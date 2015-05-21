@@ -1,7 +1,6 @@
 S = scala
 SC = scalac
 SRC = src
-SOURCES = $(shell ls $(SRC)/*.scala)
 TARGETA = logappend
 TARGETB = logread
 ARGS = \"$$\@\"
@@ -11,10 +10,10 @@ ARGS = \"$$\@\"
 
 default: .scala.class
 	 @echo \#!/bin/bash > $(TARGETA)
-	 @echo DIR=$$\(dirname \"\$${BASH_SOURCE[0]}\"\) >> $(TARGETA)
+	 @echo DIR=\`dirname \"\$$0\"\` >> $(TARGETA)
 	 @echo $(S) -cp \$$DIR/$(SRC) $(TARGETA) $(ARGS) >> $(TARGETA)
 	 @echo \#!/bin/bash > $(TARGETB)
-	 @echo DIR=$$\(dirname \"\$${BASH_SOURCE[0]}\"\) >> $(TARGETB)
+	 @echo DIR=\`dirname \"\$$0\"\` >> $(TARGETB)
 	 @echo $(S) -cp \$$DIR/$(SRC) $(TARGETB) $(ARGS) >> $(TARGETB)
 	 @chmod +x $(TARGETA)
 	 @chmod +x $(TARGETB)
