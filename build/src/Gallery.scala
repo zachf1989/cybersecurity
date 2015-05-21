@@ -50,7 +50,7 @@ class Gallery(val rooms: ArrayBuffer[Room], val people: ArrayBuffer[Person], var
                         {
                         var roomList = new ArrayBuffer[Int]
                         person.get.actions.foreach {x => if (x._2 >= 0) roomList += x._2}
-                        roomList.distinct.sorted.mkString(", ")
+                        roomList.mkString(", ")
                         }
                     else new String
 
@@ -102,7 +102,7 @@ class Gallery(val rooms: ArrayBuffer[Room], val people: ArrayBuffer[Person], var
 						              else
                                         -2
 
-                val action = (timestamp, roomId)
+                val action = (timestamp, person.get.location)
 				person.get.actions += action
 				this.timestamp = timestamp
 				status = 0
