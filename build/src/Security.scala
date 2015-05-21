@@ -13,7 +13,7 @@ object Security
     def generateToken(token: String) = 
 		{
 		val factory = SecretKeyFactory getInstance "PBKDF2WithHmacSHA1"
-		val spec = new PBEKeySpec(token.toCharArray, new String("1234").getBytes, 65536, 56)
+		val spec = new PBEKeySpec(token.toCharArray, new String("1234").getBytes, 10, 128)
 		val tmp = factory generateSecret spec
 		new SecretKeySpec(tmp.getEncoded, "AES")
 		}
