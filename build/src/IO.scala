@@ -16,55 +16,64 @@ import capstone.person.Person
 
 object IO
 	{
-	def getArg(args: Array[String], key: String) =
+    /* GET THE VALUE OF A SPECIFIC ARG */
+	def getArg (args: Array[String], key: String) =
 		{
 		var obj = new String
 		var matched = false
 
-		args.foreach
+		args foreach
 			{
 			i => if (i == key)
-				matched = true
+				    matched = true
 			     else if (matched)
-				{
-				obj = i
-                    		matched = false
-                    		}
+				    {
+				    obj = i
+                    matched = false
+                    }
 			}
 
 		obj
 		}
 
 
-	def getPeople(obj: Gallery, args: Array[String]) =
+    /* GET A LIST OF ALL PEOPLE SPECIFIED IN ARGS */
+	def getPeople (obj: Gallery, args: Array[String]) =
 		{
 		val names = new ArrayBuffer[Person]
 		var matched = false
 		var isEmployee = false
+        var invalid = false
 
-		args.foreach
+		args foreach
 			{
 			x => if (matched)
-				{
-				val person = obj.people.find { y => y.name == x && y.isEmployee == isEmployee }
+				    {
+				    val person = obj.people.find { y => y.name == x && y.isEmployee == isEmployee }
 
-				if (person != None)
-					names += person.get
+				    if (person != None)
+					   names += person.get
+                    else
+                        invalid = true
 
-				matched = false
-				}
+				    matched = false
+				    }
 			     else if (x == "-E" || x == "-G")
-				{
-				isEmployee = x == "-E"
-				matched = true
-				}
-			}
+				    {
+				    isEmployee = x == "-E"
+				    matched = true
+				    }
+			 }
 
-		names
+        if (!invalid)
+            names
+        else
+            new ArrayBuffer[Person]
 		}
 
 
-	def isValidBatch(args: Array[String]) =
+    /* LOGAPPEND -B */
+	def isValidBatch (args: Array[String]) =
 		{
 		var (result, index) = (0, 0)
 
@@ -72,9 +81,9 @@ object IO
 			{
 			result = -1
 
-			if (index < args.length -1)
+			if (index < args.length - 1)
 				if (args(index) == "-B" &&
-				    args(index+1).matches("^[a-zA-Z0-9_./]+$"))
+				    (args(index+1) matches "^[a-zA-Z0-9_./]+$"))
 					result = 1
 
 			index += 2
@@ -84,21 +93,22 @@ object IO
 		}
 
 
-	def validCommand(args: Array[String], isAppend: Boolean) =
+    /* TEST IF THE COMMAND IS VALID */
+	def validCommand (args: Array[String], isAppend: Boolean) =
 		{
 		var (result, logs, index, path) = (0, 0, 0, new String)
 
 		while (index < args.length && result >= 0)
 			{
 			result = if (isAppend)
-					isAppendOption(args, index)
-				 else
-					isReadOption(args, index)
+					   isAppendOption (args, index)
+				     else
+					   isReadOption (args, index)
 
 			if (result == 0)
 				{
 				logs += 1
-				path = args(index)
+				path = args (index)
 				}
 			else
 				index += result-1
@@ -115,51 +125,53 @@ object IO
 			None
 		}
 
-
-	def isAppendOption(args: Array[String], index: Int) =
+    
+    /* CHECK IF THE ARG IS A VALID OPTION FOR LOGAPPEND */
+	def isAppendOption (args: Array[String], index: Int) =
 		{
 		val arg = args(index)
 
-		if (arg.matches("^[a-zA-Z0-9_./]+$")) 0
+		if (arg matches "^[a-zA-Z0-9_./]+$") 0
 		else if (arg == "-A" || arg == "-L") 1
 		else if ((index < args.length - 1) &&
-			 ((arg == "-B" && args(index+1).matches("^[a-zA-Z0-9]+$")) ||
-			 (arg == "-K" && args(index+1).matches("^[a-zA-Z0-9]+.*$")) ||
-			 ((arg == "-E" || arg == "-G") && args(index+1).matches("^[a-zA-Z]+.*$")) ||
-			 ((arg == "-T" || arg == "-R") && args(index+1).matches("^[0-9]+$")))) 2
-
+			     ((arg == "-B" && (args(index+1) matches "^[a-zA-Z0-9]+$")) ||
+			      (arg == "-K" && (args(index+1) matches "^[a-zA-Z0-9]+$")) ||
+			      ((arg == "-E" || arg == "-G") && (args(index+1) matches "^[a-zA-Z]+$")) ||
+			      ((arg == "-T" || arg == "-R") && (args(index+1) matches "^[0-9]+$")))) 2
 		else -1
 		}
 
 
-	def isReadOption(args: Array[String], index: Int) =
+    /* CHECK IF THE ARG IS A VALID OPTION FOR LOGREAD */
+	def isReadOption (args: Array[String], index: Int) =
 		{
 		val arg = args(index)
 
-		if (arg.matches("^[a-zA-Z0-9_./]+$")) 0
+		if (arg matches "^[a-zA-Z0-9_./]+$") 0
 		else if (arg == "-S" || arg == "-R" || arg == "-T" || arg == "-I") 1
 		else if ((index < args.length - 1) &&
-			 ((arg == "-K" && args(index+1).matches("^[a-zA-Z0-9]+.*$")) ||
-			 ((arg == "-E" || arg == "-G") && args(index+1).matches("^[a-zA-Z]+.*$")))) 2
-
+			     ((arg == "-K" && (args(index+1) matches "^[a-zA-Z0-9]+$")) ||
+			     ((arg == "-E" || arg == "-G") && (args(index+1) matches "^[a-zA-Z]+$")))) 2
 		else -1
 		}
 
 
-	def getInt(arg: String) =
+    /* TURN AN ARG STRING INTO AN INT */
+	def getInt (arg: String) =
 		{
 		try { arg.toInt }
 		catch { case e: Exception => -1 }
 		}
 
 
-	def readGallery(file: File, token: SecretKeySpec) =
+    /* READ A LOG FILE */
+	def readGallery (file: File, token: SecretKeySpec) =
 		{
 		if (file.exists)
 			{
 			val sealedObj = try
 						{
-						val oin = new ObjectInputStream(new FileInputStream(file))
+						val oin = new ObjectInputStream (new FileInputStream (file))
 						val obj = oin.readObject
 						oin.close
 
@@ -169,7 +181,7 @@ object IO
 					catch { case e: Exception => None }
 
 			if (sealedObj != None)
-				Security.verifyGallery(sealedObj.get, token)
+				Security verifyGallery (sealedObj.get, token)
 			else
 				None
 			}
@@ -178,15 +190,15 @@ object IO
 			Some(new Gallery)
 		}
 
-        
-	def writeGallery(obj: Gallery, file: File, token: SecretKeySpec) =
+
+    /* WRITE A GALLERY TO A LOG FILE */
+	def writeGallery (obj: Gallery, file: File, token: SecretKeySpec) =
 		{
-		val sealedObj = Security.sealGallery(obj, token)
+		val sealedObj = Security sealGallery (obj, token)
 
 		try
 			{
-			val oout = new ObjectOutputStream(new FileOutputStream(file))
-
+			val oout = new ObjectOutputStream (new FileOutputStream (file))
 			oout writeObject sealedObj
 			oout.close
 			0
