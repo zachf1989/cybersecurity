@@ -1,10 +1,6 @@
 package capstone.room
 
 
-class Room(val id: Int, var population: Int) extends Serializable
+class Room(val id: Int, var population: Int = 1) extends Serializable
     {
-    def this(id: Int)
-        {
-        this(id, 1)
-        }
     }

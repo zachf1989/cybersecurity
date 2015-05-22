@@ -8,8 +8,10 @@ import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.io.ObjectInputStream
 import java.io.ObjectOutputStream
+import scala.collection.mutable.ArrayBuffer
 import capstone.gallery.Gallery
 import capstone.security.Security
+import capstone.person.Person
 
 
 object IO
@@ -17,20 +19,48 @@ object IO
 	def getArg(args: Array[String], key: String) =
 		{
 		var obj = new String
-        var matched = false
-    
+		var matched = false
+
 		args.foreach
 			{
 			i => if (i == key)
-                    matched = true
-                 else if (matched)
-                    {
-                    obj = i
-                    matched = false
-                    }
+				matched = true
+			     else if (matched)
+				{
+				obj = i
+                    		matched = false
+                    		}
 			}
 
 		obj
+		}
+
+
+	def getPeople(obj: Gallery, args: Array[String]) =
+		{
+		val names = new ArrayBuffer[Person]
+		var matched = false
+		var isEmployee = false
+
+		args.foreach
+			{
+			x => if (matched)
+				{
+				val person = obj.people.find { y => y.name == x && y.isEmployee == isEmployee }
+
+				if (person != None)
+					names += person.get
+
+				matched = false
+				}
+			     else if (x == "-E" || x == "-G")
+				{
+				isEmployee = x == "-E"
+				matched = true
+				}
+			}
+
+		names
 		}
 
 
@@ -40,14 +70,14 @@ object IO
 
 		while (index < args.length && result >= 0)
 			{
-            result = -1
-            
-            if (index < args.length -1)
-                if (args(index) == "-B" &&
-                    args(index+1).matches("^[a-zA-Z0-9_./]+$"))
-                        result = 1
+			result = -1
 
-            index += 2
+			if (index < args.length -1)
+				if (args(index) == "-B" &&
+				    args(index+1).matches("^[a-zA-Z0-9_./]+$"))
+					result = 1
+
+			index += 2
 			}
 
 		result == 1
@@ -61,10 +91,10 @@ object IO
 		while (index < args.length && result >= 0)
 			{
 			result = if (isAppend)
-                        isAppendOption(args, index)
-                     else
-                        isReadOption(args, index)
-                      
+					isAppendOption(args, index)
+				 else
+					isReadOption(args, index)
+
 			if (result == 0)
 				{
 				logs += 1
@@ -89,79 +119,78 @@ object IO
 	def isAppendOption(args: Array[String], index: Int) =
 		{
 		val arg = args(index)
-        
-        if (arg.matches("^[a-zA-Z0-9_./]+$")) 0
-        else if (arg == "-A" || arg == "-L") 1
-        else if ((index < args.length - 1) &&
-                 ((arg == "-B" && args(index+1).matches("^[a-zA-Z0-9]+$")) ||
-                  (arg == "-K" && args(index+1).matches("^[a-zA-Z0-9]+.*$")) ||
-                  ((arg == "-E" || arg == "-G") && args(index+1).matches("^[a-zA-Z]+.*$")) ||
-                  ((arg == "-T" || arg == "-R") && args(index+1).matches("^[0-9]+$")))) 2
-        else -1
-        }
+
+		if (arg.matches("^[a-zA-Z0-9_./]+$")) 0
+		else if (arg == "-A" || arg == "-L") 1
+		else if ((index < args.length - 1) &&
+			 ((arg == "-B" && args(index+1).matches("^[a-zA-Z0-9]+$")) ||
+			 (arg == "-K" && args(index+1).matches("^[a-zA-Z0-9]+.*$")) ||
+			 ((arg == "-E" || arg == "-G") && args(index+1).matches("^[a-zA-Z]+.*$")) ||
+			 ((arg == "-T" || arg == "-R") && args(index+1).matches("^[0-9]+$")))) 2
+
+		else -1
+		}
 
 
-    def isReadOption(args: Array[String], index: Int) =
-        {
-        val arg = args(index)
-    
-        if (arg.matches("^[a-zA-Z0-9_./]+$")) 0
-        else if (arg == "-S" || arg == "-R" || arg == "-T" || arg == "-I") 1
-        else if ((index < args.length - 1) &&
-                 ((arg == "-K" && args(index+1).matches("^[a-zA-Z0-9]+.*$")) ||
-                  ((arg == "-E" || arg == "-G") && args(index+1).matches("^[a-zA-Z]+.*$")))) 2
-        else -1
-        }
+	def isReadOption(args: Array[String], index: Int) =
+		{
+		val arg = args(index)
 
-        
+		if (arg.matches("^[a-zA-Z0-9_./]+$")) 0
+		else if (arg == "-S" || arg == "-R" || arg == "-T" || arg == "-I") 1
+		else if ((index < args.length - 1) &&
+			 ((arg == "-K" && args(index+1).matches("^[a-zA-Z0-9]+.*$")) ||
+			 ((arg == "-E" || arg == "-G") && args(index+1).matches("^[a-zA-Z]+.*$")))) 2
+
+		else -1
+		}
+
+
 	def getInt(arg: String) =
 		{
-		try
-			arg.toInt
-
+		try { arg.toInt }
 		catch { case e: Exception => -1 }
 		}
 
 
-    def readGallery(file: File, token: SecretKeySpec) =
+	def readGallery(file: File, token: SecretKeySpec) =
 		{
 		if (file.exists)
 			{
 			val sealedObj = try
-				                {
-				                val oin = new ObjectInputStream(new FileInputStream(file))
-				                val obj = oin.readObject
-				                oin.close
+						{
+						val oin = new ObjectInputStream(new FileInputStream(file))
+						val obj = oin.readObject
+						oin.close
 
-				                Some(obj.asInstanceOf[SealedObject])
-				                }
-                            catch { case e: Exception => None }
-			
+						Some(obj.asInstanceOf[SealedObject])
+						}
+
+					catch { case e: Exception => None }
+
 			if (sealedObj != None)
-                Security.verifyGallery(sealedObj.get, token)
-            else
-                None
-            }
-        else
-            Some(new Gallery)
-        }
+				Security.verifyGallery(sealedObj.get, token)
+			else
+				None
+			}
+
+		else
+			Some(new Gallery)
+		}
 
         
-	def writeGallery(obj: Gallery, file: File, token: SecretKeySpec) = 
+	def writeGallery(obj: Gallery, file: File, token: SecretKeySpec) =
 		{
-        val sealedObj = Security.sealGallery(obj, token)
+		val sealedObj = Security.sealGallery(obj, token)
 
-        try
-            {
-            val oout = new ObjectOutputStream(new FileOutputStream(file))
-                    
-            oout writeObject sealedObj
-            oout.close
-            0
-            }
-        catch
-            {
-            case e: Exception => 255
-            }
-        }            
+		try
+			{
+			val oout = new ObjectOutputStream(new FileOutputStream(file))
+
+			oout writeObject sealedObj
+			oout.close
+			0
+			}
+		catch { case e: Exception => 255 }
+		}
 	}
