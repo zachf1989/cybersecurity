@@ -5,7 +5,6 @@ import capstone.person.Person
 import capstone.room.Room
 import capstone.action.Action
 
-
 class Gallery (val rooms: ArrayBuffer[Room], val people: ArrayBuffer[Person],
                var timestamp: Int = 0) extends Serializable
 	{

@@ -6,7 +6,6 @@ import capstone.gallery.Gallery
 import capstone.security.Security
 import capstone.io.IO
 
-
 object logappend
 	{
 	def main (args: Array[String])

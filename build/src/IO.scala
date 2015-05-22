@@ -13,7 +13,6 @@ import capstone.gallery.Gallery
 import capstone.security.Security
 import capstone.person.Person
 
-
 object IO
 	{
     /* GET THE VALUE OF A SPECIFIC ARG */

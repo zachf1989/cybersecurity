@@ -3,7 +3,6 @@ import capstone.gallery.Gallery
 import capstone.security.Security
 import capstone.io.IO
 
-
 object logread
 	{
 	def main (args: Array[String])

@@ -7,7 +7,6 @@ import javax.crypto.spec.PBEKeySpec
 import javax.crypto.SealedObject
 import capstone.gallery.Gallery
 
-
 object Security
 	{
     /* TURN A TOKEN STRING INTO A VALID AES KEY */
