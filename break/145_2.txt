@@ -1,0 +1,6 @@
+If I specify a valid log file that does not exist, it should give an empty output, not an invalid output.
+
+Expected [{exit:0, output:""}]
+Received [{exit:255, output:"invalid"}]
+
+This is what is produced by the Oracle and does not contradict anything in the Spec.

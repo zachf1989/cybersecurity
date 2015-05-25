@@ -1,0 +1,4 @@
+"If the batch file does not exist, print "invalid" to stdout and exit, returning 255."
+
+Expected [{exit:255, output:"invalid"}]
+Received [{exit:0, output:""}]
