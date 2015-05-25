@@ -1,0 +1,5 @@
+"Command line arguments can appear in any order."
+Moving the log argument to the first argument results in an invalid return.
+
+Expected [{"exit":0, "output":"\n\n"}]
+Received [{"exit":255, "output":"invalid"}]
