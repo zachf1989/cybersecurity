@@ -1,0 +1,5 @@
+A missing log file arguement does not render the command invalid.
+The program is accepting the last option -S as the logfile name, which it should not do.
+
+Expected [{"exit":255, "output":"invalid"}]
+Received [{"exit":0, "output":""}]

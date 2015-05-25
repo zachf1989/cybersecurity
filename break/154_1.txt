@@ -1,0 +1,1 @@
+logappend crashes when given a file whose contents are not valid batch commands.

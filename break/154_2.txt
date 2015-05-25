@@ -1,0 +1,1 @@
+logappend crashes when supplied a directory for the log arguement.
